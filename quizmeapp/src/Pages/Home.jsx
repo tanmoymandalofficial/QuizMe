@@ -1,66 +1,106 @@
-import React, { useState,useContext } from 'react';
-import {AppContext} from '../Context/ContextProvider';
-import { NavLink } from 'react-router-dom';
+import { Heading } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { getData } from "../Redux/action";
+// import { saveData } from "../utils/Localstorage";
 
 const Home = () => {
-    const [name, setName] = useState('');
-    const [category, setCategory] = useState('9');
-    const [difficulty, setDifficulty] = useState('easy');
-    const [numQuestions, setNumQuestions] = useState(10);
-    
+  
+  const saveData = (key, data) => {
+    localStorage.setItem(key, JSON.stringify(data));
+  };
+  
+  const [name, setName] = useState("");
+  const [Category, setCategory] = useState("");
+  const [difficulty, setDifficulty] = useState("");
+  const [noofq, setNoofq] = useState(10);
 
-    const { values, updaataeQuestions, updateResust, params } = useContext(AppContext);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(getData());
+  }, []);
 
-    const handleSubmit =  (e) => {
-        e.preventDefault();
+  const appdata = useSelector((store) => store.appdata);
+//   console.log(appdata);
 
-        // fetch(`https://opentdb.com/api.php?amount=${numQuestions}&category=${category}&difficulty=${difficulty}&type=multiple`)
-        // .then((res)=> res.json())
-        // .then((data)=>{
-        //     // console.log(data);
-        //     updaataeQuestions(data)
-        // })
-        params.numQuestions = numQuestions;
-        params.category = category;
-        params.difficulty = difficulty;
-        
+  const handleform = (event) => {
+    event.preventDefault();
+    const queryparams = {
+      params: {
+        amount: noofq,
+        difficulty: difficulty,
+        category: Category,
+      },
+    };
 
-      };
+    dispatch(getData(queryparams)).then(() => navigate("/quiz"));
+    // console.log("submitted");
+    saveData("filters",queryparams);
 
-// onSubmit={handleSubmit}
+  };
+
   return (
-    <div className="container mt-5">
-      <h1>Quiz App</h1>
-      <form > 
-        <div className="form-group">
-          <label htmlFor="name">Name:</label>
-          <input type="text" className="form-control" id="name" value={name} onChange={(e) => setName(e.target.value)} required />
-        </div>
-        <div className="form-group">
-          <label htmlFor="category">Category:</label>
-          <select className="form-control" id="category" value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="9">General Knowledge</option>
+    <div>
+        <Heading fontSize="40px">Set up your Quiz</Heading>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection:"column",
+          alignItems: "center",
+          height: "100vh",
+
+        }}
+        
+      >
+        
+        <form
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "400px",
+            gap: "30px",
+            boxShadow:
+            "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px",
+            padding:"10px",
+            borderRadius:"10px",
+            marginTop:"-20%",
+            // height:"40%"
+          }}
+        >
+          
+          <input
+            type="text"
+            placeholder="Enter Your Name"
+            onChange={(e) => setName(e.target.value)}
+          />
+          <select onChange={(e) => setCategory(e.target.value)}>
+            <option value="">Select Category</option>
             <option value="21">Sports</option>
+            <option value="9">General Knowledge</option>
             <option value="22">Geography</option>
           </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor="difficulty">Difficulty:</label>
-          <select className="form-control" id="difficulty" value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
+          <select onChange={(e) => setDifficulty(e.target.value)}>
+            <option value="">Select Difficulty</option>
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
           </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor="numQuestions">Number of Questions:</label>
-          <input type="number" className="form-control" id="numQuestions" value={numQuestions} onChange={(e) => setNumQuestions(e.target.value)} min="1" max="50" required />
-        </div>
-        <button type="submit" className="btn btn-primary" onClick={handleSubmit}><NavLink to='/quiz'>Start</NavLink></button>
-      </form>
+          <input
+            type="number"
+            placeholder="Choose number of Question"
+            onChange={(e) => setNoofq(e.target.value)}
+          />
+          <button style={{ background: "indigo",color:"white" }} onClick={handleform}>
+            START QUIZ
+          </button>
+        </form>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

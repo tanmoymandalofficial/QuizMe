@@ -1,14 +1,23 @@
-import logo from './logo.svg';
+
 import './App.css';
-import AllRouts from './Routs/AllRouts';
-import ContextProvider from './Context/ContextProvider';
+
+import React from 'react'
+
+import Home from './Pages/Home';
+import Quiz from './Pages/Quiz';
+import {Routes,Route} from "react-router-dom";
+import Result from "./Pages/Result"
 
 function App() {
   return (
     <div className="App">
-      <ContextProvider>
-        <AllRouts/>
-      </ContextProvider>
+      <Routes>
+
+        <Route path="/" element={<Home/>}/>
+        <Route path="quiz" element={<Quiz/>}/>
+        <Route path="result" element={<Result/>}/>
+      </Routes>
+      
     </div>
   );
 }
